@@ -27,10 +27,10 @@ def sin_test(ntest=1000):
     pplot.xlabel('X1')
     pplot.ylabel('X2')
     
-    layer_dims = [2,8,6,4,1]
-    layer_types = ['input','sigmoid','sigmoid','sigmoid','sigmoid']
+    layer_dims = [2,8,8,4,4,1]
+    layer_types = ['input','relu','relu','relu','relu','sigmoid']
     
-    predictor = nn.dnn(layer_dims,layer_types)
+    predictor = nn.dnn(layer_dims,layer_types,beta1=0.9,beta2=0.999)
     
     #predictor.forward_step(x)
     #dA = -y/predictor.layers[-1].a + (1-y)/(1-predictor.layers[-1].a)
@@ -50,7 +50,7 @@ def sin_test(ntest=1000):
     #assert(predictor.layers[3].layer_size==1)
     
     if True:
-        cost = predictor.train(x,y,iterations=10000,learning_rate=0.1) 
+        cost = predictor.train_minibatch(x,y,epochs=400,learning_rate=0.003) 
         pplot.figure('cost')
         pplot.plot(cost)  
         Nx = 33
@@ -69,4 +69,11 @@ def sin_test(ntest=1000):
         ypred = ypred.reshape((Nx,Ny))    
     
         pplot.figure()
-        pplot.imshow(np.transpose(ypred),cmap='Spectral_r',origin='lower')
+        extent = [0,1,0,1]
+        pplot.imshow(np.transpose(ypred),cmap='Spectral_r',
+                     extent=extent,origin='lower')
+        pplot.scatter(x[0,:],x[1,:],cmap='RdBu_r',c=64.*y.flatten()+128,edgecolors='face')
+        pplot.xlim((0,1))
+        pplot.ylim((0,1))
+        pplot.xlabel('X1')
+        pplot.ylabel('X2')
