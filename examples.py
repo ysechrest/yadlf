@@ -30,7 +30,7 @@ def sin_test(ntest=1000):
     layer_dims = [2,8,8,4,4,1]
     layer_types = ['input','relu','relu','relu','relu','sigmoid']
     
-    predictor = nn.dnn(layer_dims,layer_types,beta1=0.9,beta2=0.999)
+    predictor = nn.dnn(layer_dims,layer_types,beta1=0.9,beta2=0.999,lambda_reg=0.03)
     
     #predictor.forward_step(x)
     #dA = -y/predictor.layers[-1].a + (1-y)/(1-predictor.layers[-1].a)

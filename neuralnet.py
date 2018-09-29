@@ -3,6 +3,10 @@
 Created on Sat Sep 22 17:02:37 2018
 
 @author: yanceys
+
+TODO:
+- Implement Batch Normalization
+
 """
 import numpy as np
 #----------------------------------------------------------------
@@ -80,9 +84,10 @@ class inputlayer:
 class nnlayer:
     
     def __init__(self,in_size,layer_size,activation='relu',afunc=None,wnorm=None,
-                 beta1=None,beta2=None):
+                 beta1=None,beta2=None,lambda_reg=None):
         self.activation = activation #Type of activation (e.g. 'relu')
         self.layer_size = layer_size #Number of nodes
+        self.lambda_reg = lambda_reg #L2 Regularization factor
         if self.activation == 'sigmoid':
             self.afunc = sigmoid #function hook for activation
             self.W = np.random.randn(layer_size,in_size)*np.sqrt(1.0/in_size) #Weight Array
@@ -97,7 +102,7 @@ class nnlayer:
             self.b = np.zeros((layer_size,1))
         elif self.activation == 'user':
             self.afunc = afunc
-            self.W = np.arndom.randn(layer_size,in_size)*wnorm
+            self.W = np.random.randn(layer_size,in_size)*wnorm
             self.b = np.zeros((layer_size,1))
         self.z = None #stores linear calculation W*X+B from forward prop for backprop
         self.a = None #stores activiation A(z) from forward prop for backprop
@@ -120,18 +125,25 @@ class nnlayer:
     def backward_prop(self,dA,prelayer):
         m = dA.shape[1]
         dz = dA*self.afunc(self.z,prime=True)
+        
+        dW_temp = (1.0/m)*np.dot(dz,prelayer.a.T)
+        if not(self.lambda_reg is None):
+            dW_temp += (self.lambda_reg/m)*self.W
+        db_temp = (1.0/m)*np.sum(dz,axis=1,keepdims=True)
+        
         if (self.beta1 is None):
             #No Momentum
-            self.dW = (1.0/m)*np.dot(dz,prelayer.a.T)
-            self.db = (1.0/m)*np.sum(dz,axis=1,keepdims=True)
+            self.dW = dW_temp
+            self.db = db_temp
         else:
             #Momentum Update
-            self.dW = self.dW*self.beta1 + (1-self.beta1)*(1.0/m)*np.dot(dz,prelayer.a.T)
-            self.db = self.db*self.beta1 + (1-self.beta1)*(1.0/m)*np.sum(dz,axis=1,keepdims=True)
+            self.dW = self.dW*self.beta1 + (1-self.beta1)*dW_temp
+            self.db = self.db*self.beta1 + (1-self.beta1)*db_temp
         if not(self.beta2 is None):
             #RMSprop Update
-            self.sW = self.sW*self.beta2 + (1-self.beta2)*((1.0/m)*np.dot(dz,prelayer.a.T))**2.0
-            self.sb = self.sb*self.beta2 + (1-self.beta2)*((1.0/m)*np.sum(dz,axis=1,keepdims=True))**2.0
+            self.sW = self.sW*self.beta2 + (1-self.beta2)*(dW_temp)**2.0
+            self.sb = self.sb*self.beta2 + (1-self.beta2)*(db_temp)**2.0
+        
         dA_pre = np.dot(self.W.T,dz)
         return dA_pre
         
@@ -164,8 +176,9 @@ class nnlayer:
 #----------------------------------------------------------------
 class dnn:
     
-    def __init__(self,layer_dims,layer_types,beta1=None,beta2=None):
+    def __init__(self,layer_dims,layer_types,beta1=None,beta2=None,lambda_reg=None):
         self.layers=[]
+        self.lambda_reg = lambda_reg #L2 regularization factor
         for ii in np.arange(len(layer_dims)):
             if layer_types[ii] == 'input':
                 #Make the 'dummy' input layer
@@ -173,7 +186,10 @@ class dnn:
                 self.layers.append(layer_ii)
             else:
                 #Create a layer (hidden or output)
-                layer_ii = nnlayer(layer_dims[ii-1],layer_dims[ii],activation=layer_types[ii],beta1=beta1,beta2=beta2)
+                layer_ii = nnlayer(layer_dims[ii-1],layer_dims[ii],
+                                   activation=layer_types[ii],
+                                   beta1=beta1,beta2=beta2,
+                                   lambda_reg=lambda_reg)
                 self.layers.append(layer_ii)
     
     def forward_step(self,X):
@@ -186,8 +202,13 @@ class dnn:
         #Compute the log-loss cost function
         m = Y.shape[1]
         cost = (-1.0/m)*np.sum(Y*np.log(self.layers[-1].a) + 
-                               (1-Y)*np.log(1-self.layers[-1].a))
+                                (1-Y)*np.log(1-self.layers[-1].a))
         cost = np.squeeze(cost)
+        
+        if not(self.lambda_reg is None):
+            for ii in np.arange(1,len(self.layers)):
+                cost += (self.lambda_reg/(2.0*m))*np.linalg.norm(self.layers[ii].W,ord='fro')**2.0
+        
         return cost        
         
     def backward_step(self,Y):
