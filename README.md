@@ -15,3 +15,5 @@ predictor = nn.dnn(layer_dims,layer_types,beta1=0.9,beta2=0.999,lambda_reg=0.03)
 
 examples.py currently contains a simple example of fitting a sin-wave decision boundary. Running sin_test() should produce a plot of the cost vs. iteration, and a plot of the test data plotted over the prediction contours.
 
+# For the future
+I'm working on adding some more bells and whistles. Would like to explore implementing a simple CNN architecure, time permitting. I'm also in the process of translating this to C++ and playing with CUDA to accelerate the calculations. Check back later...
