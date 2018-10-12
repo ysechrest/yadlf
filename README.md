@@ -1,9 +1,9 @@
 # yadlf
-#Deep Learning Playground
+# Deep Learning Playground
 
 The purpose of this project is to create a playground for machine-learning fundamentals and simple deep learning projects. Not particularly novel. Not particularly exciting. The programming equivalent of building your own bicycle.
 
-#Description
+# Description
 neuranet.py defines classes that may be used to create a fully-connected network.
 The snippet below builds a small network with 2 features and 5 layers of size [8,8,4,4,1]. Activations are defined as relu for hidden and sigmoid for output. The network constructor sets the momentum (beta1), RMSprop (beta2), and L2 regularization parameters (lambda_reg).
 
