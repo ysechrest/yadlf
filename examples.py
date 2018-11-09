@@ -77,3 +77,6 @@ def sin_test(ntest=1000):
         pplot.ylim((0,1))
         pplot.xlabel('X1')
         pplot.ylabel('X2')
+        pplot.show()
+
+sin_test()
