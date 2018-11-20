@@ -1,0 +1,12 @@
+﻿  nnlayer.cpp
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(75): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(80): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(87): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(139): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(143): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanceys\source\cpp\simplenn\simplenn\nnlayer.cpp(156): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  tests.cpp
+c:\users\yanceys\source\cpp\simplenn\simplenn\tests.cpp(10): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\yanceys\source\cpp\simplenn\simplenn\tests.cpp(52): warning C4305: 'argument': truncation from 'double' to 'float'
+  Generating Code...
+  simpleNN.vcxproj -> C:\Users\yanceys\source\cpp\simpleNN\Debug\simpleNN.exe
